@@ -8,10 +8,28 @@ random.seed(42) # Every run of split_kather will give the same train/val/test sp
 def safe_makedir(path):
     os.makedirs(path, exist_ok=True)
 
+
 def copy_unique(src, dst):
-    """ Copy a file only if it does not already exist in the destination. """
-    if not osp.exists(osp.join(dst, osp.basename(src))):
-        shutil.copy2(src, dst)
+    """Copy a file or directory only if it does not already exist in the destination."""
+    # If source is a directory, copy all its contents
+    if os.path.isdir(src):
+        # Ensure destination directory exists
+        os.makedirs(dst, exist_ok=True)
+        # Copy entire directory structure
+        for item in os.listdir(src):
+            src_path = os.path.join(src, item)
+            dst_path = os.path.join(dst, item)
+            if os.path.isdir(src_path):
+                shutil.copytree(src_path, dst_path, dirs_exist_ok=True)
+            else:
+                if not os.path.exists(dst_path):
+                    shutil.copy2(src_path, dst_path)
+    else:
+        # Handle single file
+        if not os.path.exists(osp.join(dst, osp.basename(src))):
+            # If dst is a directory, ensure it exists
+            os.makedirs(dst, exist_ok=True)
+            shutil.copy2(src, dst)
 
 # ******* Split Kather 16 Dataset into Train/Val/Test *******
 def split_kather16(path_data_in):
