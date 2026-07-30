@@ -15,7 +15,7 @@ def train_one_epoch(model, dataloader, optimizer, criterion, device):
     running_loss, correct, total = 0.0, 0, 0
 
     for images, labels, idx in tqdm(dataloader, desc="Training", leave=False):
-        images = images.to(device)
+        images = images.to(device, non_blocking=True)
         labels = torch.as_tensor(labels, device=device)
         #labels = torch.as_tensor([label_map[l.item()] for l in labels], device=device)
 
@@ -41,7 +41,7 @@ def evaluate(model, dataloader, criterion, device, phase="Val"):
 
     with torch.no_grad():
         for images, labels, idx in tqdm(dataloader, desc=phase, leave=False):
-            images = images.to(device)
+            images = images.to(device, non_blocking=True)
             labels = torch.as_tensor(labels, device=device)
             #labels = torch.as_tensor([label_map[l.item()] for l in labels], device=device)
             outputs = model(images)
